@@ -1,0 +1,195 @@
+<!DOCTYPE HTML>
+<!--
+	Phantom by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>LearnNav</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+	</head>
+	<body class="is-preload">
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Header -->
+					<header id="header">
+						<div class="inner">
+
+							<!-- Logo -->
+								<a href="index.html" class="logo">
+									<span class="symbol"><img src="images/logo.svg" alt="" /></span><span class="title">LearnNav</span>
+								</a>
+
+							<!-- Nav -->
+								<nav>
+									<ul>
+										<li><a href="#menu">Menu</a></li>
+									</ul>
+								</nav>
+
+						</div>
+					</header>
+
+				<!-- Menu -->
+					<nav id="menu">
+						<h2>Menu</h2>
+						<ul>
+							<li><a href="index.html">Home</a></li>
+							<li><a href="WISN.html">What is surgical navigation?</a></li>
+							<li><a href="OArmMain.html">Medtronic O-Arm Operation</a></li>
+							<li><a href="UnderCon.html">Medtronic Stealth Navigation</a></li>
+
+						</ul>
+					</nav>
+
+				<!-- Main -->
+                <style>
+                    html, body {
+                      margin: 0;
+                      padding: 0;
+                      height: 100%;
+                      font-family: sans-serif;
+                    }
+                
+                    .container {
+                      position: relative;
+                      width: 100vw;
+                      max-width: 100%;
+                      height: auto;
+                    }
+                
+                    img {
+                      width: 100%;
+                      height: auto;
+                      display: block;
+                    }
+                
+                    svg {
+                      position: absolute;
+                      top: 0;
+                      left: 0;
+                      pointer-events: none;
+                      width: 100%;
+                      height: 100%;
+                    }
+                
+                    select {
+                      margin: 1rem;
+                      padding: 0.5rem;
+                      font-size: 1.1rem;
+                      font-weight: bold;
+			          font-size: 1.5rem;
+                    }
+                
+                    circle {
+                      fill: none;
+                      stroke: red;
+                      stroke-width: 3;
+                    }
+                    .selector-container {
+                  width: 100%;
+                  display: flex;
+                  justify-content: center;
+                  margin: 1rem 0;
+                }
+                  </style>
+                </head>
+                <body>
+                
+                    <div class="selector-container">
+                  <select id="itemSelector">
+                    <option value="">How Do I?</option>
+                  <option value="1">Open</option>
+                  <option value="2">Close</option>
+                  <option value="3">Raise/Lower Gantry</option>
+                  <option value="4">Move Gantry Forward/Back Left/Right</option>
+                  <option value="5">Change AP/Lateral</option>
+                  <option value="6">Save Image</option>
+                  <option value="7">FOV Crosshair</option>
+                  <option value="8">Mirror Image</option>
+                  <option value="8.5">Flip Image</option>
+                  <option value="9">Inc FOV</option>
+                  <option value="10">Tilt Gantry</option>
+                  <option value="11">Wag Gantry</option>
+                  <option value="12">Lift and Shift</option>
+                  <option value="13">Go to 3D</option>
+                  </select>
+                </div>
+                  <div class="container">
+                    <img id="mainImage" 
+                         src="https://www.ijssurgery.com/content/ijss/17/4/534/F2.large.jpg" 
+                         alt="Annotated Panel" />
+                    <svg id="overlay"></svg>
+                  </div>
+                
+                  <script>
+                    const positions = {
+                    "1": { x: 854, y: 113, r: 30 },
+                    "2": { x: 777, y: 113, r: 30 },
+                    "3": { x: 814, y: 302, r: 60 },
+                    "4": { x: 811, y: 624, r: 70 },
+                    "5": { x: 45, y: 164, r: 60 },
+                    "6": { x: 85, y: 276, r: 30 },
+                    "7": { x: 707, y: 279, r: 30 },
+                    "8": { x: 32, y: 354, r: 30 },
+                    "8.5": { x: 137, y: 356, r: 30 },
+                    "9": { x: 123, y: 166, r: 60 },
+                    "10": { x: 814, y: 190, r: 60 },
+                    "11": { x: 812, y: 456, r: 80 },
+                    "12": { x: 779, y: 35, r: 30 },
+                    "13": { x: 528, y: 8, r: 30 }
+                    };
+                
+                    const selector = document.getElementById("itemSelector");
+                    const svg = document.getElementById("overlay");
+                    const img = document.getElementById("mainImage");
+                
+                    function drawCircle() {
+                      svg.innerHTML = '';
+                      const item = selector.value;
+                      if (!positions[item]) return;
+                
+                      const targets = Array.isArray(positions[item])
+                                      ? positions[item]
+                                      : [positions[item]];
+                
+                      const scaleX = img.clientWidth / img.naturalWidth;
+                      const scaleY = img.clientHeight / img.naturalHeight;
+                      const avgScale = (scaleX + scaleY) / 2;
+                
+                      targets.forEach(({ x, y, r }) => {
+                        const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                        circle.setAttribute("cx", x * scaleX);
+                        circle.setAttribute("cy", y * scaleY);
+                        circle.setAttribute("r", r * avgScale);
+                        svg.appendChild(circle);
+                      });
+                    }
+                
+                    selector.addEventListener("change", drawCircle);
+                    window.addEventListener("resize", drawCircle);
+                  </script>
+
+				<!-- Footer -->
+							<ul class="copyright">
+								<li>&copy; LearnNav. All rights reserved</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+							</ul>
+						</div>
+					</footer>
+
+			</div>
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+
+	</body>
+</html>

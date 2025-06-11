@@ -1,16 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Image Highlighter</title>
+  <meta charset="UTF-8" />
+  <title>O-Arm Quick Guide</title>
   <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: sans-serif;
+    }
+
     .container {
       position: relative;
-      width: 600px;
+      width: 100vw;
+      max-width: 100%;
+      height: auto;
     }
 
     img {
       width: 100%;
+      height: auto;
       display: block;
     }
 
@@ -24,7 +34,9 @@
     }
 
     select {
-      margin-top: 20px;
+      margin: 1rem;
+      padding: 0.5rem;
+      font-size: 1.1rem;
     }
 
     circle {
@@ -36,13 +48,8 @@
 </head>
 <body>
 
-<div class="container">
-  <img id="mainImage" src="https://www.ijssurgery.com/content/ijss/17/4/534/F2.large.jpg" alt="Annotated Image">
-  <svg id="overlay"></svg>
-</div>
-
-<select id="itemSelector">
-  <option value="">How Do I?</option>
+  <select id="itemSelector">
+    <option value="">How Do I?</option>
   <option value="1">Open</option>
   <option value="2">Close</option>
   <option value="3">Raise/Lower</option>
@@ -57,42 +64,62 @@
   <option value="11">Wag Gantry</option>
   <option value="12">Lift and Shift</option>
   <option value="13">Go to 3D</option>
-</select>
+  </select>
 
-<script>
-  const positions = {
-    "1": { x: 401, y: 54, r: 20 },
-    "2": { x: 364, y: 52, r: 20 },
-    "3": { x: 382, y: 141, r: 40 },
-    "4": { x: 381, y: 294, r: 50 },
-    "5": { x: 21, y: 76, r: 40 },
-    "6": { x: 40, y: 131, r: 20 },
-    "7": { x: 331, y: 131, r: 20 },
-    "8": { x: 16, y: 165, r: 20 },
-    "8.5": { x: 65, y: 166, r: 20 },
-    "9": { x: 59, y: 77, r: 40 },
-    "10": { x: 381, y: 90, r: 40 },
-    "11": { x: 381, y: 214, r: 50 },
-    "12": { x: 365, y: 18, r: 20 },
-    "13": { x: 247, y: 6, r: 20 }
-  };
+  <div class="container">
+    <img id="mainImage" 
+         src="https://www.ijssurgery.com/content/ijss/17/4/534/F2.large.jpg" 
+         alt="Annotated Panel" />
+    <svg id="overlay"></svg>
+  </div>
 
-  const selector = document.getElementById("itemSelector");
-  const svg = document.getElementById("overlay");
+  <script>
+    const positions = {
+    "1": { x: 854, y: 113, r: 30 },
+    "2": { x: 777, y: 113, r: 30 },
+    "3": { x: 814, y: 302, r: 60 },
+    "4": { x: 811, y: 624, r: 70 },
+    "5": { x: 45, y: 164, r: 60 },
+    "6": { x: 85, y: 276, r: 30 },
+    "7": { x: 707, y: 279, r: 30 },
+    "8": { x: 32, y: 354, r: 30 },
+    "8.5": { x: 137, y: 356, r: 30 },
+    "9": { x: 123, y: 166, r: 60 },
+    "10": { x: 814, y: 190, r: 60 },
+    "11": { x: 812, y: 456, r: 80 },
+    "12": { x: 779, y: 35, r: 30 },
+    "13": { x: 528, y: 8, r: 30 }
+    };
 
-  selector.addEventListener("change", () => {
-    svg.innerHTML = ''; // Clear previous circles
-    const item = selector.value;
-    if (positions[item]) {
-      const { x, y, r } = positions[item];
-      const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-      circle.setAttribute("cx", x);
-      circle.setAttribute("cy", y);
-      circle.setAttribute("r", r);
-      svg.appendChild(circle);
+    const selector = document.getElementById("itemSelector");
+    const svg = document.getElementById("overlay");
+    const img = document.getElementById("mainImage");
+
+    function drawCircle() {
+      svg.innerHTML = '';
+      const item = selector.value;
+      if (!positions[item]) return;
+
+      const targets = Array.isArray(positions[item])
+                      ? positions[item]
+                      : [positions[item]];
+
+      const scaleX = img.clientWidth / img.naturalWidth;
+      const scaleY = img.clientHeight / img.naturalHeight;
+      const avgScale = (scaleX + scaleY) / 2;
+
+      targets.forEach(({ x, y, r }) => {
+        const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        circle.setAttribute("cx", x * scaleX);
+        circle.setAttribute("cy", y * scaleY);
+        circle.setAttribute("r", r * avgScale);
+        svg.appendChild(circle);
+      });
     }
-  });
-</script>
 
+    selector.addEventListener("change", drawCircle);
+    window.addEventListener("resize", drawCircle);
+  </script>
+  
 </body>
 </html>

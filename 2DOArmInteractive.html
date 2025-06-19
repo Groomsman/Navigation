@@ -1,0 +1,208 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>LearnNav</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+    <link rel="icon" href="images/Spheres.png">
+	</head>
+	<body class="is-preload">
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Header -->
+					<header id="header">
+						<div class="inner">
+
+							<!-- Logo -->
+								<a href="index.html" class="logo">
+									<span class="symbol"><img src="images/Spheres.png" alt="" /></span><span class="title">LearnNav</span>
+								</a>
+
+							<!-- Nav -->
+								<nav>
+									<ul>
+										<li><a href="#menu">Menu</a></li>
+									</ul>
+								</nav>
+
+						</div>
+					</header>
+
+				<!-- Menu -->
+					<nav id="menu">
+						<h2>Menu</h2>
+						<ul>
+							<li><a href="index.html">Home</a></li>
+							<li><a href="WISN.html">What is surgical navigation?</a></li>
+							<li><a href="OArmMain.html">Medtronic O-Arm Operation</a></li>
+							<li><a href="StealthMain.html">Medtronic Stealth Navigation</a></li>
+                            <li><a href="UnderCon.html">BrainLab</a></li>
+							<li><a href="UnderCon.html">Ziehm Vision RFD 3D</a></li>
+
+						</ul>
+					</nav>
+
+				<!-- Main -->
+ <style>
+
+
+    .step-guide {
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    #feedback {
+      margin-top: 1rem;
+      font-size: 1.2rem;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .image-container {
+      position: relative;
+      width: 100%;
+      max-width: 800px;
+      margin: auto;
+    }
+
+    .image-container img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    #hotspot-layer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: all;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="step-guide">
+    <h2 id="instruction">Step 1: Open the O-Arm ring to drive into position</h2>
+  </div>
+
+  <div class="image-container">
+    <img id="tutorial-image" src="https://www.ijssurgery.com/content/ijss/17/4/534/F2.large.jpg" alt="Interactive Panel">
+    <svg id="hotspot-layer"></svg>
+  </div>
+
+  <div id="feedback"></div>
+
+  <script>
+    const steps = [
+      { instruction: "Step 1: Open the O-Arm ring to drive into position", correctId: "button1" },
+      { instruction: "Step 2: Close the O-Arm Ring - Ensuring all Clear", correctId: "button2" },
+      { instruction: "Step 3: You have taken your first scout shot - Save the image", correctId: "button3" },
+      { instruction: "Step 4: Turn on the red FOV Crosshair", correctId: "button4" },
+      { instruction: "Step 5: Move the gantry Forward/Back and Left/Right to better position the shot", correctId: "button5" },
+      { instruction: "Step 6: Rotate the ring for a lateral shot", correctId: "button6" },
+      { instruction: "Step 7: Raise or Lower the gantry", correctId: "button7" },
+      { instruction: "Step 8: Congratulations! You have centered the image as needed. Go to 3D mode for a spin.", correctId: "button8" }
+    ];
+
+    const hotspots = [
+      { id: "button1", x: 854, y: 113, r: 30 },
+      { id: "button2", x: 777, y: 113, r: 30 },
+      { id: "button3", x: 85, y: 276, r: 30 },
+      { id: "button4", x: 707, y: 279, r: 30 },
+      { id: "button5", x: 811, y: 624, r: 70 },
+      { id: "button6", x: 45, y: 164, r: 60 },
+      { id: "button7", x: 814, y: 302, r: 60 },
+      { id: "button8", x: 528, y: 8, r: 30 }
+    ];
+
+    let currentStep = 0;
+    const instruction = document.getElementById("instruction");
+    const feedback = document.getElementById("feedback");
+    const svg = document.getElementById("hotspot-layer");
+    const img = document.getElementById("tutorial-image");
+
+    function renderHotspots() {
+      svg.innerHTML = '';
+
+      const scaleX = img.clientWidth / img.naturalWidth;
+      const scaleY = img.clientHeight / img.naturalHeight;
+
+      // 🔷 Full transparent background to detect incorrect clicks
+      const backgroundRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+      backgroundRect.setAttribute("x", 0);
+      backgroundRect.setAttribute("y", 0);
+      backgroundRect.setAttribute("width", "100%");
+      backgroundRect.setAttribute("height", "100%");
+      backgroundRect.setAttribute("fill", "transparent");
+      backgroundRect.addEventListener("click", () => {
+        feedback.textContent = "❌ Try again";
+      });
+      svg.appendChild(backgroundRect);
+
+      // 🔴 Add interactive hotspots
+      hotspots.forEach(({ id, x, y, r }) => {
+        const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        circle.setAttribute("cx", x * scaleX);
+        circle.setAttribute("cy", y * scaleY);
+        circle.setAttribute("r", r * ((scaleX + scaleY) / 2));
+        circle.setAttribute("fill", "transparent");
+        circle.setAttribute("stroke", "transparent");
+        circle.style.cursor = "pointer";
+
+        circle.addEventListener("click", (e) => {
+          e.stopPropagation(); // Prevent backgroundRect from triggering
+          handleClick(id);
+        });
+
+        svg.appendChild(circle);
+      });
+    }
+
+    function handleClick(clickedId) {
+      const step = steps[currentStep];
+      if (clickedId === step.correctId) {
+        feedback.textContent = "✅ Correct!";
+        currentStep++;
+        if (currentStep < steps.length) {
+          instruction.textContent = steps[currentStep].instruction;
+        } else {
+          instruction.textContent = "🎉 2D O-Arm Tutorial Complete!";
+          feedback.textContent = "";
+        }
+      } else {
+        feedback.textContent = "❌ Try again";
+      }
+    }
+
+    function refresh() {
+      renderHotspots();
+      instruction.textContent = steps[currentStep].instruction;
+    }
+
+    window.addEventListener("load", refresh);
+    window.addEventListener("resize", renderHotspots);
+  </script>
+
+				<!-- Footer -->
+							<ul class="copyright">
+								<li>&copy; LearnNav. All rights reserved</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+							</ul>
+						</div>
+					</footer>
+
+			</div>
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+
+	</body>
+</html>

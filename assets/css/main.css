@@ -51,6 +51,14 @@ table {
 	border-spacing: 0;
 }
 
+video {
+    width: 100%;
+    height: auto;
+    max-width: 800px; /* optional: sets a comfortable max width */
+    display: block;
+    margin-bottom: 20px;
+}
+
 body {
 	-webkit-text-size-adjust: none;
 }
